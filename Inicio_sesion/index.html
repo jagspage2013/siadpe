@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SIADPE</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/main.css">
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.9.1.min.js" />
+	<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/jquery.validate.js" />
+	<script src="js/bootstrap.min.js"/>
+
+	
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			$("#searchForm").submit(function(){
+				$("#result").html("<b>Esperando Respuesta</b>");
+
+				$.ajax({
+					type: 'POST',
+					url: 'Buscar.php',
+					data: $(this).serialize()
+				}).done(function(data){
+					//$("#result").html(data);
+					$("#result").html(createTable(data));
+				}).fail(function(){
+					$("#result").html("La Busqueda Falló");
+				});
+
+				return false;
+			});
+
+			function createTable(data){
+				var arr = JSON.parse(data);
+				var out;
+				if(arr.num_cta!=null)
+					out = "<div class=\"table-responsive\"><table class=\"table table-striped table-bordered\"><tbody><tr><td> Número de Cuenta</td><td>"+arr.num_cta+ "</td></tr> <tr><td> Nombre</td><td>"+arr.nom_paciente+ "</td></tr> <tr><td> Apellido Paterno</td><td>"+arr.ap_pat_paciente+ "</td></tr> <tr><td> Apellido Materno</td><td>"+arr.ap_mat_paciente+ "</td></tr> <tr><td> Correo</td><td>"+arr.email+ "</td></tr> <tr><td> Calle</td><td>"+arr.calle+ "</td></tr> <tr><td> Num ext</td><td>"+arr.num_ext+ "</td></tr> <tr><td> Num int</td><td>"+arr.num_int+ "</td></tr> <tr><td>Colonia</td><td>"+arr.colonia+ "</td></tr> <tr><td>Delegacion</td><td>"+arr.delegacion+ "</td></tr> <tr><td> Telefono Paciente</td><td>"+arr.telefono_pac+ "</td></tr> </tbody></table></div>";
+				else
+					out = "<b> No hay Registro</b>"
+
+				return out;
+			}
+
+			$("#input_form").validate({
+				ignore: "",
+				rules: {
+					'no_cuenta': {
+						required: true,	                 
+					},
+					'nombre': {
+						required: true,	                 
+					},
+					'a_Pat': {
+						required: true,
+					},
+					'a_Mat':{
+						required: true,
+					}	                
+				},
+				errorPlacement: function(error, element){}
+
+			});
+		});
+	</script>
+
+</head>
+<body>
+	<nav class="navbar navbar-default">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand">SIADPE</a>
+			</div>
+			<div >
+				<ul class="nav navbar-nav navbar-right ">
+					<li class=""><a href="#" title="">Inicio</a></li>
+					<li class=""><a href="#" title="">Altas</a></li>
+					<li class=""><a href="#" title="">Bajas</a></li>
+					<li class=""><a href="#" title="">Consultas</a></li>
+					<li class=""><a href="#" title="">Iniciar Sesión</a></li>
+
+				</ul>
+			</div>
+		</div>
+
+	</nav>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>Consultas</h1>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="col-lg-6">
+				<h1>Paciente</h1>
+				<form id="searchForm">
+					<input type="text" name="no_cuenta" placeholder="Search...">
+					<input class="btn btn-info" type="submit" value="Buscar"/>
+				</form>
+				
+			</div>
+			<div class = "col-lg-6">
+				<h1>Resultado</h1>
+				<div id="result">	</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="col-lg-12">
+				<h1>Altas</h1>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="col-lg-6">
+				<h1>Alta Paciente</h1>
+					<form id="input_form">
+						<fieldset id="formulario1">
+							<input name="no_cuenta" type="number" placeholder="Numero de cuenta">
+							<input name="nombre" type="text" placeholder="Nombre">
+							<input name="a_Pat" type="text" placeholder="Apellido Paterno">
+							<input name="a_Mat" type="text" placeholder="Apellido Materno">
+							<input name="calle" type="text" placeholder="Calle">
+							<input name="num_ext" type="number" placeholder="Número Exterior">
+							<input name="num_int" type="number" placeholder="Número Interior">
+							<input name="colonia" type="text" placeholder="Colonia">
+							<input name="delegacion" type="text" placeholder="Delegación">
+							<input name="email" type="text" placeholder="Email">
+							<input name="telefono" type="number" placeholder="Teléfono">
+							<input name="contrasena" type="text" placeholder="Contraseña">
+							<input name="clave_admon" type="number" placeholder="Clave Administrado">
+							<input class="btn btn-success" name="Registrar" type="submit" value="Registrar">
+						</fieldset>
+					</form>
+
+				</div>
+				<div class = "col-lg-6">
+					<h1>Resultado</h1>
+					<div id="result">	</div>
+				</div>
+			</div>
+
+		</div>
+
+	</body>
+</html>

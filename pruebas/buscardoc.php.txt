@@ -1,0 +1,33 @@
+<?php
+include 'constants.php';
+$Buscador = $_POST['Buscador'];
+if (isset($_POST["Buscar"])) {
+//	$result = mysql_query("SELECT cedula_prof FROM medico WHERE cedula_prof='".$Buscador."'") or die(mysql_error());  
+	//$row = mysql_fetch_array( $result );
+	header("Location: Busqueda.php?var=$Buscador");
+}
+?>
+
+
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Untitled Document</title>
+</head>
+
+<body>
+<form action="" method="post">
+<fieldset id="formulario1">
+<p>Busqueda</p>
+<p>Cédula profesional</p>
+<p>
+  <input type="number" name="Buscador" id="Buscador" value="<?php echo $reg["Buscador"]; ?>">
+</p>
+<p>
+  <input type="submit" name="Buscar" id="Buscar" value="Buscar">
+</p>
+</fieldset>
+</form>
+</body>
+</html>

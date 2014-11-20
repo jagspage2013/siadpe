@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SIADPE</title>
+	<meta charset="utf-8">
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/bootstrap-theme.min.css">
+	<link rel="stylesheet" href="css/main.css">
+	<script type="text/javascript" src="js/jquery-1.9.1.js" ></script>
+	<script type="text/javascript" src="js/bootstrap.min.js"> </script>
+	<script type="text/javascript" src="js/main.js"></script>
+
+	<script type="text/javascript">
+		$(document).ready(function(){
+			var modifiform_press;
+
+			$(".modifibtn").click(function() {
+				modifiform_press = $(this).attr('name');
+			});
+
+			$("#modifiform").submit(function() {
+				console.log("Apretaste"+modifiform_press);
+				if(modifiform_press.match("modificar")){
+					console.log("entra"+modifiform_press);
+					var input = $('<input type="hidden" name="cedula_prof_ant"/>');
+					input.val($("#get_form :input[name='cedula_prof']").val());
+
+					$(this).append(input);
+
+					$.ajax({
+						type: 'POST',
+						url: 'modificar_med.php',
+						data: $(this).serialize()
+					}).done(function(data){
+						console.log("Estos son los datos"+data);
+
+						if (data.match("^Cannot")) {
+							alert("Clave de Administrador no valida");
+						}else if(data.match("^Duplicate")){
+							alert("Cedula prof repetida");
+						}else{
+							var arr = JSON.parse(data);
+							if(arr.result ==1){
+								$("#modifiform").trigger("reset");
+								$("#modifiform :input[name='cedula_prof_ant']").attr('type', 'hidden');
+								alert("Registro Modificado");
+							}else{
+								alert("Error al Modificar");
+							}
+						}
+
+					}).fail(function(data){
+						var arr = JSON.parse(data);
+						console.log("Estos son los datos"+data);
+
+					});
+
+
+				}else if(modifiform_press.match("eliminar")){
+					console.log("entra"+modifiform_press);
+					var input = $('<input type="hidden" name="cedula_prof_ant"/>');
+					input.val($("#get_form :input[name='cedula_prof']").val());
+					
+
+					if(input.val().length != 0){
+
+						$.ajax({
+							type: 'POST',
+							url: 'eliminardoctor.php',
+							data: {'cedula_prof': input.val()}
+						}).done(function(data){
+							console.log("Estos son los datos"+data);	
+							var arr = JSON.parse(data);
+							console.log(arr.result + " datos de eliminar");
+							if(arr.result==true){
+								$("#modifiform").trigger("reset");
+								$("#modifiform :input[name='cedula_prof_ant']").attr('type', 'hidden');
+								alert("Registro Eliminado");
+							}else{
+								alert("Error al Eliminar");
+							}
+
+						}).fail(function(data){
+							var arr = JSON.parse(data);
+							console.log("Estos son los datos"+data);
+
+						});
+					}else{
+						alert("Ingresa una cedula profesional que exista")
+					}
+
+				}
+
+
+				return false;
+			});
+
+			
+		});
+	</script>
+
+</head>
+<body>
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a href="#" class="navbar-brand">SIADPE</a>
+			</div>
+			<div >
+				<ul class="nav navbar-nav navbar-right ">
+					<li class=""><a href="../index.php" title="">Inicio</a></li>
+					<li class=""><a href="#" id="consulta"title="">Consultas</a></li>
+					<li class=""><a href="#" id="agregar" title="">Altas</a></li>
+					<li class=""><a href="#" id="editar" title="">Edición</a></li>
+					<li class=""><a href="#" title="">Iniciar Sesión</a></li>
+
+				</ul>
+			</div>
+		</div>
+
+	</nav>
+	<div class="container">
+
+		<div class="row">
+			<div class="col-lg-12" id ="ad_doc2">
+				<h1>Consulta</h1>
+				<p>En esta sección podrás buscar a los doctores por su número de cuenta</p>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="col-lg-4">
+				<h4>Ingresa Cédula profesional.</h4>
+				<form id="searchForm">
+					<input type="text" name="cedula_prof" placeholder="Search...">
+					<input class="btn btn-info" type="submit" value="Buscar"/>
+				</form>
+				
+			</div>
+			<div class = "col-lg-8">
+				<div id="result"></div>
+			</div>
+		</div>
+		<div class="clear"></div><div class="clear"></div>
+
+
+		<div class="row" >
+			<div class="col-lg-12" id="ad_doc">
+				<h1 >Agregar Médico</h1>
+				<p>En esta sección podrás insertar nuevos doctores</p>
+
+			</div>
+		</div>
+		<div class = "row">
+			<div class="col-lg-8 col-lg-offset-2">
+				<h4>Ingresa los datos del doctor a Insertar</h4>
+				<form id="input_form">
+					<input name="cedula_prof" type="number" placeholder="Cedula Profesional" >
+					<input name="nom_medico" type="text" placeholder="Nombre médico">
+					<input name="ap_pat_medico" type="text" placeholder="Apellido Paterno">
+					<input name="ap_mat_medico" type="text" placeholder="Apellido Materno">
+					<input name="email_medico" type="text" placeholder="Email Médico">
+					<input name="calle_medico" type="text" placeholder="Calle Médico">
+					<input name="num_int_medico" type="number" placeholder="Número Interior">
+					<input name="num_ext_medico" type="number" placeholder="Número Exterior">
+					<input name="colonia_medico" type="text" placeholder="Colonia">
+					<input name="delegacion_medico" type="text" placeholder="Delegación">
+					<input name="telefono_medico" type="number" placeholder="Teléfono">
+					<input name="contrasenia_medico" type="text" placeholder="Contraseña">
+					<input name="clave_admon" type="number" placeholder="Clave Administrador">
+					<input name="consultorio" type="text" placeholder="Consultorio">
+					<input class="btn btn-success" name="Registrar" type="submit" value="Registrar">
+				</form>
+
+			</div>
+		</div>
+		<div class="clear"></div><div class="clear"></div>
+		<div class="row">
+			<div class="col-lg-12" id="ad_doc3">
+				<h1>Modificar y Eliminar</h1>
+				<p>En esta sección podrás modificar los datos de un médico <br> o simplemente eliminarlo.</p>
+			</div>
+		</div>
+		<div class = "row">
+			<div class="col-lg-8 col-lg-offset-2">
+				<h3>Cédula profesional a Modificar.</h3>
+				<form id="get_form">
+					<input type="text" name="cedula_prof" placeholder="Search...">
+					<input class="btn btn-info" type="submit" value="Buscar Médico"/>
+				</form>
+				
+			</div>
+			<div class = "col-lg-8 col-lg-offset-2">
+				<form id="modifiform" class = "form-horizontal" role="form">
+
+					<div class="form-group">
+						<label for="cedula_prof" class="col-lg-10">Cédula Profesional</label>
+						<div class="col-lg-10">
+							<input name="cedula_prof" class="form-control" type="number">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="nom_medico" class="col-lg-10">Nombre Médico</label>
+						<div class = "col-lg-10">
+							<input name="nom_medico" class="form-control" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="ap_pat_medico" class="col-lg-10">Apellido Paterno</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="ap_pat_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="ap_mat_medico" class="col-lg-10">Apellido Materno</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="ap_mat_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="email_medico" class="col-lg-10">Email </label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="email_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="calle_medico" class="col-lg-10">Calle</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="calle_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="num_int_medico" class="col-lg-10">Número Interno</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="num_int_medico" type="number">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="num_ext_medico" class="col-lg-10">Número Externo</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="num_ext_medico" type="number">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="colonia_medico" class="col-lg-10">Colonia</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="colonia_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="delegacion_medico" class="col-lg-10">Delegación</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="delegacion_medico" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="telefono_medico" class="col-lg-10">Telefono</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="telefono_medico" type="number">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="contrasenia_medico" class="col-lg-10">Contraseña</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="contrasenia_medico" type="text" >
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="clave_admon" class="col-lg-10">Clave Administrador</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="clave_admon" type="number">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="consultorio" class="col-lg-10">Consultorio</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="consultorio" type="text">
+						</div>
+					</div>
+					<div class="form-group" >
+						<label for="especialidad" class="col-lg-10">Especialidad</label>
+						<div class = "col-lg-10">
+							<input class="form-control" name="especialidad" type="text">
+						</div>
+					</div>
+					<div class = "col-lg-5">
+						<input class="btn btn-warning btn-block modifibtn" type="submit" name="modificar "value="Modificar"/>
+					</div>
+					<div class = "col-lg-5">
+						<input class="btn btn-danger btn-block modifibtn" type="submit" name = "eliminar" value="Eliminar"/>
+					</div>
+
+				</form>
+			</div>
+		</div>
+	</div>
+
+	<footer>
+		<div class='container'>
+			
+			<div class='col-lg-6'>
+				<h5>Universidad Nacional Autónoma de México</h5>
+				<h4>Facultad de Ingeniería</h4>
+			</div>
+
+
+			<div class='col-lg-6'>
+				<h5>Acerda De</h5>
+				 <p>Sistema de Administración  de Personal <br>
+				<p>Escribenos a:<a href='mailto:jagspage2012@gmail.com'>contacto@siadpe.mx</a></p>
+			</div>
+
+
+		</div>
+	</footer>
+
+
+
+	<script type="text/javascript">
+		var toper = $('#agregar');
+		var toper2 = $('#consulta');
+		var toper3 = $('#editar');
+
+		
+         toper.click(function() {
+         	$('html, body').animate({scrollTop: $('#ad_doc').offset().top -$('.navbar').height() + 10}, 500);
+         	return false;
+         });
+         toper2.click(function() {
+         	$('html, body').animate({scrollTop: $('#ad_doc2').offset().top -$('.navbar').height() + 10}, 500);
+         	return false;
+         });
+         toper3.click(function() {
+         	$('html, body').animate({scrollTop: $('#ad_doc3').offset().top -$('.navbar').height() + 10}, 500);
+         	return false;
+         });
+       
+	</script>
+</body>
+</html>
