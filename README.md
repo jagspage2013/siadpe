@@ -1,3 +1,2 @@
-# siadpe
-
-Siadpe is a College project to manage registries online
+# Web Siadpe
+Siadpe es un proyecto web de ejemplo para manejar consultas CRUD 
